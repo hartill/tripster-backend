@@ -4,8 +4,9 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var mysql = require('mysql')
-
 var connection = require('./connection');
+const fileUpload = require('express-fileupload');
+const fs = require('fs')
 
 routes = require('./routes')
 
@@ -26,11 +27,43 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 //app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static('public'))
+app.use(fileUpload());
 
 app.get('/albums', routes.getAlbums);
 app.get('/location/:id', routes.getLocationData);
 app.get('/album/:id', routes.getSingleAlbum);
 app.get('/images/:id', routes.getAlbumImages);
+app.post('/new-album', routes.postNewAlbum);
+app.post('/new-location', routes.postNewLocation);
+app.post('/upload-image', function(req, res) {
+  if (!req.files)
+    return res.status(400).send('No files were uploaded.');
+
+  let albumId = req.body.albumId.toString()
+  let dir = './public/images/' + albumId + '/'
+
+  if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir)
+  }
+
+  let image = req.files.image
+  let fileName = image.name
+
+  // Use the mv() method to place the file somewhere on your server
+  image.mv(dir + fileName, function(err, result) {
+    if (err)
+      return res.status(500).send(err)
+
+    //res.send(JSON.stringify(result))
+  })
+  
+  let value = [fileName, albumId]
+  connection.query('INSERT INTO images (url, album_id) VALUES (?, ?)', value, function (err, result) {
+          if (err) throw err;
+          res.send(JSON.stringify(result))
+      }
+  );
+});
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
