@@ -9,9 +9,9 @@ var connection = mysql.createConnection({
   //password: 'z28Nyr&1',
   user: 'root',
   password: 'root',
-  database: 'trips',
+  database: 'tripster_db',
   insecureAuth: true,
-  socketPath: '/Applications/MAMP/tmp/mysql/mysql.sock'
+  //socketPath: '/Applications/MAMP/tmp/mysql/mysql.sock'
 })
 
 module.exports = connection;

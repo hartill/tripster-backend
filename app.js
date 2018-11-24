@@ -30,35 +30,52 @@ app.use(express.static('public'))
 app.use(fileUpload());
 
 app.get('/albums', routes.getAlbums);
-app.get('/location/:id', routes.getLocationData);
+app.get('/location/:id', routes.getLocation);
 app.get('/album/:id', routes.getSingleAlbum);
-app.get('/images/:id', routes.getAlbumImages);
+app.get('/image/:id', routes.getImage);
+app.get('/album-images/:id', routes.getAlbumImages);
+app.get('/image-location/:id', routes.getImageLocation);
+app.get('/album-location/:id', routes.getAlbumLocationIds);
+app.get('/get-location-by-name', routes.getLocationByName);
+
+app.delete('/remove-image/:id', routes.deleteImage);
+app.delete('/delete-album/:id', routes.deleteAlbum);
+
+app.post('/update-featured-image/:id', routes.postFeaturedImage);
+app.post('/update-album', routes.updateAlbum);
 app.post('/new-album', routes.postNewAlbum);
 app.post('/new-location', routes.postNewLocation);
+app.post('/new-album-to-location', routes.postNewAlbumToLocation);
 app.post('/upload-image', function(req, res) {
   if (!req.files)
     return res.status(400).send('No files were uploaded.');
 
-  let albumId = req.body.albumId.toString()
+  let locationId = req.body.location_id
+  let albumId = req.body.album_id
   let dir = './public/images/' + albumId + '/'
 
   if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir)
   }
 
-  let image = req.files.image
-  let fileName = image.name
+  let file = req.files.file
+  let fileName = file.name
+  let filePath = dir + fileName
 
-  // Use the mv() method to place the file somewhere on your server
-  image.mv(dir + fileName, function(err, result) {
-    if (err)
-      return res.status(500).send(err)
+  // place the file on the server if it doesn't already exist
+  if (!fs.existsSync(filePath)) {
+    file.mv(filePath, function(err, result) {
+      if (err)
+        return res.status(500).send(err)
 
-    //res.send(JSON.stringify(result))
-  })
-  
-  let value = [fileName, albumId]
-  connection.query('INSERT INTO images (url, album_id) VALUES (?, ?)', value, function (err, result) {
+      //res.send(JSON.stringify(result))
+    })
+  } else {
+    return res.status(400).send('File with same name already exists.');
+  }
+
+  let value = [fileName, albumId, locationId]
+  connection.query('INSERT INTO images (file_name, album_id, location_id) VALUES (?, ?, ?)', value, function (err, result) {
           if (err) throw err;
           res.send(JSON.stringify(result))
       }
