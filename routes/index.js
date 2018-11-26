@@ -89,8 +89,9 @@ exports.postNewAlbum = function(req, res) {
   );
 }
 
-exports.getLocationByName = function(req, res) {
-  connection.query('SELECT id FROM locations WHERE name = ? LIMIT 1', req.body, function (err, results, fields) {
+exports.getLocationByCoords = function(req, res) {
+  console.log(req.body)
+  connection.query('SELECT id FROM locations WHERE lat = ? AND lng = ?', req.body, function (err, results, fields) {
       if (err) throw err;
       res.send(result);
     }

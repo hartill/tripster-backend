@@ -36,7 +36,7 @@ app.get('/image/:id', routes.getImage);
 app.get('/album-images/:id', routes.getAlbumImages);
 app.get('/image-location/:id', routes.getImageLocation);
 app.get('/album-location/:id', routes.getAlbumLocationIds);
-app.get('/get-location-by-name', routes.getLocationByName);
+app.get('/get-location-by-coords', routes.getLocationByCoords);
 
 app.delete('/remove-image/:id', routes.deleteImage);
 app.delete('/delete-album/:id', routes.deleteAlbum);
