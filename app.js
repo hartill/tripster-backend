@@ -25,6 +25,13 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
+
 //app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static('public'))
 app.use(fileUpload());
@@ -36,51 +43,20 @@ app.get('/image/:id', routes.getImage);
 app.get('/album-images/:id', routes.getAlbumImages);
 app.get('/image-location/:id', routes.getImageLocation);
 app.get('/album-location/:id', routes.getAlbumLocationIds);
-app.get('/get-location-by-coords', routes.getLocationByCoords);
+app.get('/get-location-by-coords/?', routes.getLocationByCoords);
 
 app.delete('/remove-image/:id', routes.deleteImage);
 app.delete('/delete-album/:id', routes.deleteAlbum);
+app.delete('/delete-album-location-connection/?', routes.deleteAlbumLocationConnection);
 
 app.post('/update-featured-image/:id', routes.postFeaturedImage);
 app.post('/update-album', routes.updateAlbum);
 app.post('/new-album', routes.postNewAlbum);
 app.post('/new-location', routes.postNewLocation);
 app.post('/new-album-to-location', routes.postNewAlbumToLocation);
-app.post('/upload-image', function(req, res) {
-  if (!req.files)
-    return res.status(400).send('No files were uploaded.');
+app.post('/update-image-location/?', routes.updateImageLocation);
 
-  let locationId = req.body.location_id
-  let albumId = req.body.album_id
-  let dir = './public/images/' + albumId + '/'
-
-  if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir)
-  }
-
-  let file = req.files.file
-  let fileName = file.name
-  let filePath = dir + fileName
-
-  // place the file on the server if it doesn't already exist
-  if (!fs.existsSync(filePath)) {
-    file.mv(filePath, function(err, result) {
-      if (err)
-        return res.status(500).send(err)
-
-      //res.send(JSON.stringify(result))
-    })
-  } else {
-    return res.status(400).send('File with same name already exists.');
-  }
-
-  let value = [fileName, albumId, locationId]
-  connection.query('INSERT INTO images (file_name, album_id, location_id) VALUES (?, ?, ?)', value, function (err, result) {
-          if (err) throw err;
-          res.send(JSON.stringify(result))
-      }
-  );
-});
+app.post('/upload-image', routes.postNewImage);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
