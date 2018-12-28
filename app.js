@@ -49,7 +49,7 @@ app.delete('/remove-image/:id', routes.deleteImage);
 app.delete('/delete-album/:id', routes.deleteAlbum);
 app.delete('/delete-album-location-connection/?', routes.deleteAlbumLocationConnection);
 
-app.post('/update-featured-image/:id', routes.postFeaturedImage);
+app.post('/update-featured-image/?', routes.updateFeaturedImage);
 app.post('/update-album', routes.updateAlbum);
 app.post('/new-album', routes.postNewAlbum);
 app.post('/new-location', routes.postNewLocation);

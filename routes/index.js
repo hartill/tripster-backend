@@ -94,6 +94,7 @@ exports.postNewImage = function(req, res) {
     orientation = 1
   }
   let albumId = req.body.album_id
+
   let dir = './public/images/' + albumId + '/'
 
   if (!fs.existsSync(dir)) {
@@ -148,12 +149,9 @@ exports.postNewAlbumToLocation = function(req, res) {
   );
 }
 
-exports.postFeaturedImage = function(req, res) {
-  let albumId = req.params.id
-  let imageId = req.body[0]
-  let values = [imageId, albumId]
-  console.log(albumId, imageId)
-  connection.query('UPDATE albums SET featured_image_id = ? WHERE id = ?', values, function (err, result) {
+exports.updateFeaturedImage = function(req, res) {
+  let query = [req.query.image_id, req.query.album_id]
+  connection.query('UPDATE albums SET featured_image_id = ? WHERE id = ?', query, function (err, result) {
           if (err) throw err;
           res.send(result);
       }
