@@ -94,6 +94,10 @@ exports.postNewImage = function(req, res) {
     orientation = 1
   }
   let albumId = req.body.album_id
+  let width = req.body.width
+  let height = req.body.height
+  let file_size = req.body.file_size
+  let last_modified = req.body.last_modified
 
   let dir = './public/images/' + albumId + '/'
 
@@ -117,8 +121,8 @@ exports.postNewImage = function(req, res) {
     return res.status(400).send('File with same name already exists.');
   }
 
-  let value = [fileName, orientation, albumId, locationId]
-  connection.query('INSERT INTO images (file_name, orientation, album_id, location_id) VALUES (?, ?, ?, ?)', value, function (err, result) {
+  let value = [fileName, width, height, orientation, file_size, last_modified, albumId, locationId]
+  connection.query('INSERT INTO images (file_name, width, height, orientation, file_size, last_modified, album_id, location_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', value, function (err, result) {
           if (err) throw err;
           res.send(JSON.stringify(result))
       }
