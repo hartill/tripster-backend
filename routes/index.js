@@ -8,7 +8,6 @@ exports.getLocation = function(req, res) {
     if (err) throw err
     res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
     res.send(JSON.stringify(results));
-    console.log(results)
   });
 }
 
@@ -19,7 +18,6 @@ exports.getImage = function(req, res) {
     if (err) throw err
     res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
     res.send(JSON.stringify(results));
-    console.log(results)
   });
 }
 
@@ -30,7 +28,6 @@ exports.getImageLocation = function(req, res) {
     if (err) throw err
     res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
     res.send(JSON.stringify(results));
-    console.log(results)
   });
 }
 
@@ -48,7 +45,6 @@ exports.getSingleAlbum = function(req, res) {
     if (err) throw err
     res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
     res.send(JSON.stringify(results));
-    console.log(results)
   });
 }
 
@@ -60,7 +56,6 @@ exports.getAlbumImages = function(req, res) {
     if (err) throw err
     res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
     res.send(JSON.stringify(results));
-    console.log(results)
   });
 }
 
@@ -209,12 +204,10 @@ exports.deleteImage = function(req, res) {
   let dir = './public/images/'
   connection.query('SELECT file_name, album_id FROM images WHERE id = ? LIMIT 1',[req.params.id], function (err, results, fields) {
     if (err) throw err
-    console.log(results)
     fileName = results[0].file_name
     albumId = results[0].album_id
 
     let imagePath = dir + albumId + '/' + fileName
-    console.log(imagePath)
 
     if(fileName) {
       fs.unlink(imagePath, function (err) {
